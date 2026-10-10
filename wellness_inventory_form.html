@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness Inventory | Pickin' Up Those Peaces</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F7F2EC;color:#2C2C2C;line-height:1.5}
+.page{max-width:680px;margin:0 auto;padding:32px 20px 60px}
+
+/* Header */
+.brand{text-align:center;padding:28px 0 0}
+.brand-name{font-size:22px;font-weight:700;color:#1B3A4B;letter-spacing:.04em}
+.doc-title{font-size:15px;font-style:italic;color:#777;margin:6px 0 12px}
+.brand-rule{border:none;border-top:1.5px solid #7B5733;margin:0 0 8px}
+.doc-sub{font-size:12px;color:#AAAAAA;text-align:center;margin-bottom:28px}
+
+/* Callout */
+.callout{background:white;border-left:4px solid #7B5733;padding:18px 20px;margin:0 0 28px;border-radius:0 4px 4px 0}
+.callout p{font-size:13.5px;color:#333;margin-bottom:8px}
+.callout p:last-child{margin-bottom:0}
+.callout .sig{font-weight:600;color:#1B3A4B;margin-top:12px}
+
+/* Field pairs */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.field-row.single{grid-template-columns:1fr}
+.field-group label{display:block;font-size:11px;font-weight:600;color:#1B3A4B;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field-group input,.field-group textarea{width:100%;border:none;border-bottom:1.5px solid #C8BEB4;background:transparent;padding:6px 0;font-size:14px;color:#2C2C2C;outline:none;transition:border-color .2s}
+.field-group input:focus,.field-group textarea:focus{border-bottom-color:#1B3A4B}
+.field-group textarea{resize:vertical;min-height:80px;border:1.5px solid #C8BEB4;border-radius:4px;padding:8px;margin-top:4px}
+
+/* Section headers */
+.section{margin:28px 0 16px}
+.section-title{font-size:11px;font-weight:700;color:#1B3A4B;letter-spacing:.08em;text-transform:uppercase;padding-bottom:4px;border-bottom:1.5px solid #7B5733;margin-bottom:6px}
+.section-sub{font-size:11.5px;font-style:italic;color:#888;margin-bottom:14px}
+
+/* Rating scales */
+.rating-block{margin-bottom:18px}
+.rating-label{font-size:13.5px;font-weight:600;color:#2C2C2C;margin-bottom:3px}
+.rating-sub{font-size:11px;color:#888;font-style:italic;margin-bottom:8px}
+.scale{display:flex;justify-content:space-between;gap:2px}
+.scale input[type=radio]{display:none}
+.scale label{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.scale label .bubble{width:28px;height:28px;border-radius:50%;border:1.5px solid #BBBBBB;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;transition:all .15s;background:white}
+.scale label .num{font-size:10px;color:#888}
+.scale input[type=radio]:checked+.bubble{background:#1B3A4B;border-color:#1B3A4B;color:white}
+.scale label:nth-child(-n+3) .bubble{border-color:#c9a0a0}
+.scale label:nth-child(-n+3) .num{color:#8B3A3A}
+.scale label:nth-last-child(-n+3) .bubble{border-color:#7fad96}
+.scale label:nth-last-child(-n+3) .num{color:#2B5E4F}
+.scale-foot{display:flex;justify-content:space-between;font-size:10px;color:#AAAAAA;font-style:italic;margin-top:4px;padding:0 2px}
+
+/* Radio rows (multiple choice) */
+.choice-block{margin-bottom:18px}
+.choice-label{font-size:13.5px;font-weight:600;color:#2C2C2C;margin-bottom:8px}
+.choice-sub{font-size:11px;color:#888;font-style:italic;margin-bottom:8px}
+.choice-opts{display:flex;flex-wrap:wrap;gap:8px}
+.choice-opts label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#444;cursor:pointer;padding:6px 12px;border:1.5px solid #DDDDDD;border-radius:20px;transition:all .15s;background:white}
+.choice-opts label:hover{border-color:#7B5733;color:#7B5733}
+.choice-opts input[type=radio]:checked+span,.choice-opts input[type=checkbox]:checked+span{color:#1B3A4B;font-weight:600}
+.choice-opts label:has(input:checked){border-color:#1B3A4B;background:#EEF3F6}
+.choice-opts input{width:14px;height:14px;accent-color:#1B3A4B}
+
+/* Safety box */
+.safety-box{background:white;border:1.5px solid #1B3A4B;border-radius:6px;padding:16px 18px;margin:20px 0}
+.safety-box p{font-size:13.5px;font-weight:600;color:#2C2C2C;margin-bottom:12px}
+
+/* Open questions */
+.q-block{margin-bottom:20px}
+.q-label{font-size:14px;font-weight:600;color:#1B3A4B;margin-bottom:3px;display:block}
+.q-num{color:#7B5733;margin-right:4px}
+.q-sub{font-size:11.5px;color:#888;font-style:italic;margin-bottom:8px}
+.q-block textarea{width:100%;border:1.5px solid #C8BEB4;border-radius:4px;padding:10px 12px;font-size:13.5px;color:#2C2C2C;font-family:inherit;resize:vertical;outline:none;transition:border-color .2s;background:white}
+.q-block textarea:focus{border-color:#1B3A4B}
+
+/* Submit */
+.submit-wrap{text-align:center;margin-top:36px}
+.btn-submit{background:#1B3A4B;color:white;border:none;padding:14px 48px;font-size:14px;font-weight:600;border-radius:4px;cursor:pointer;letter-spacing:.04em;transition:background .2s}
+.btn-submit:hover{background:#264d61}
+.btn-submit:disabled{background:#aaa;cursor:default}
+
+/* Messages */
+.msg{display:none;text-align:center;padding:20px;border-radius:6px;font-size:14px;margin-top:20px}
+.msg.success{background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7}
+  .results-panel{display:none;background:#fff;border:1.5px solid #C8BEB4;border-radius:6px;padding:24px;margin-top:20px}
+  .results-panel h2{color:#1B3A4B;font-size:17px;margin-bottom:6px;font-family:Arial,sans-serif}
+  .results-panel .sent-note{color:#2B5E4F;font-size:13px;margin-bottom:20px;font-style:italic}
+  .results-section{margin-bottom:16px}
+  .results-section h3{color:#7B5733;font-size:13px;font-weight:700;border-bottom:1px solid #E0D8D0;padding-bottom:4px;margin-bottom:8px;font-family:Arial,sans-serif}
+  .results-row{display:flex;justify-content:space-between;font-size:13px;color:#2C2C2C;padding:3px 0;font-family:Arial,sans-serif}
+  .results-row .label{color:#666}
+  .results-row .value{font-weight:700;color:#1B3A4B}
+  .results-text{font-size:13px;color:#2C2C2C;line-height:1.5;white-space:pre-wrap;font-family:Arial,sans-serif}
+  .btn-print{background:#7B5733;color:#fff;border:none;padding:10px 28px;font-size:13px;font-weight:700;border-radius:4px;cursor:pointer;margin-top:16px;font-family:Arial,sans-serif}
+  .btn-print:hover{background:#1B3A4B}
+  @media print{
+    .no-print{display:none!important}
+    .results-panel{display:block!important;border:none;padding:0}
+    body{background:#fff;padding:12px}
+    .btn-print{display:none}
+  }
+.msg.error{background:#FFEBEE;color:#C62828;border:1.5px solid #FFCDD2}
+
+@media(max-width:500px){
+  .field-row{grid-template-columns:1fr}
+  .scale label .bubble{width:24px;height:24px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="brand">
+    <div class="brand-name">PICKIN' UP THOSE PEACES</div>
+    <div class="doc-title">Wellness Inventory</div>
+    <hr class="brand-rule">
+    <div class="doc-sub">Complete before your discovery call &nbsp;·&nbsp; About ten minutes</div>
+  </div>
+
+  <!-- Form -->
+  <form id="wi-form" novalidate>
+
+    <!-- Welcome -->
+    <div class="callout">
+      <p>Hello and welcome,</p>
+      <p>Thank you for deciding to let me accompany you on this path of yours.</p>
+      <p>This is a wellness inventory that will help me understand a little bit about who you are and where you're at, before we get into the work we'll be doing together. Most of the questions are a simple rating system, from zero to ten. There is one question at the end that asks for a little more.</p>
+      <p>I ask that you go through this, and that you please be honest with me. The more straightforward you are with me, the stronger the foundation that we'll have to build from.</p>
+      <p>Thank you.</p>
+      <p class="sig">Mike Cavett</p>
+    </div>
+
+    <!-- Basics -->
+    <div class="field-row">
+      <div class="field-group"><label>Name</label><input type="text" name="client_name" required placeholder="Your full name"></div>
+      <div class="field-group"><label>Date</label><input type="date" name="date_completed"></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Email</label><input type="email" name="client_email" placeholder="your@email.com"></div>
+      <div class="field-group"><label>Phone</label><input type="tel" name="client_phone" placeholder="(555) 000-0000"></div>
+    </div>
+
+    <!-- BODY -->
+    <div class="section">
+      <div class="section-title">Body</div>
+      <div class="section-sub">Rate where you are right now.</div>
+    </div>
+
+    <script>
+    function ratingScale(name, label, sub) {
+      let s = `<div class="rating-block"><div class="rating-label">${label}</div>`;
+      if(sub) s += `<div class="rating-sub">${sub}</div>`;
+      s += `<div class="scale">`;
+      for(let i=0;i<=10;i++) {
+        s += `<label><input type="radio" name="${name}" value="${i}"><div class="bubble">${i}</div></label>`;
+      }
+      s += `</div><div class="scale-foot"><span>Not at all</span><span>Completely</span></div></div>`;
+      document.write(s);
+    }
+    ratingScale('body_health','Physical health overall','At this moment, how would you honestly rate your overall health?');
+    ratingScale('body_movement','Movement and exercise','How much are you currently exercising?');
+    ratingScale('body_sleep','Sleep','Quality and consistency. How completely do you wake up feeling rested?');
+    ratingScale('body_nutrition','Nutrition','How healthy are you currently eating?');
+    ratingScale('body_energy','Energy','How complete is your baseline energy throughout a typical day?');
+    ratingScale('body_substances','Your relationship with substances','How much does your relationship with alcohol, tobacco, caffeine, or anything else factor in?');
+    </script>
+
+    <!-- MIND -->
+    <div class="section">
+      <div class="section-title">Mind</div>
+    </div>
+    <script>
+    ratingScale('mind_wellbeing','Mental and emotional wellbeing','How well do you maintain your mental and emotional well-being?');
+    ratingScale('mind_stress','Stress and how you handle it','How well do you effectively manage your stress in a healthy way?');
+    ratingScale('mind_clarity','Clarity and focus','Your ability to think clearly, stay present, and stay on task.');
+    </script>
+
+    <!-- LIFE -->
+    <div class="section">
+      <div class="section-title">Life</div>
+    </div>
+    <script>
+    ratingScale('life_connection','Social connection','How much do your relationships support you, in showing up for you in your life?');
+    ratingScale('life_purpose','Purpose and meaning','How connected do you feel to something that matters?');
+    ratingScale('life_satisfaction','Overall gratitude','Taken as a whole, how grateful are you for the little things in life?');
+    </script>
+
+    <!-- READINESS -->
+    <div class="section">
+      <div class="section-title">Readiness</div>
+    </div>
+    <script>
+    ratingScale('r_importance','How important is it to you right now to make real changes?','0 = not a priority  ·  10 = the most important thing in my life right now');
+    ratingScale('r_confidence','How confident are you that you could actually make those changes?','0 = no confidence  ·  10 = completely confident');
+    </script>
+
+    <!-- STATUS CHECKS -->
+    <div class="section">
+      <div class="section-title">A Few Quick Status Checks</div>
+      <div class="section-sub">These get covered in more depth later.</div>
+    </div>
+
+    <div class="choice-block">
+      <div class="choice-label">Alcohol use right now:</div>
+      <div class="choice-opts">
+        <label><input type="radio" name="alcohol" value="None"><span>None</span></label>
+        <label><input type="radio" name="alcohol" value="Occasional"><span>Occasional</span></label>
+        <label><input type="radio" name="alcohol" value="A few times a week"><span>A few times a week</span></label>
+        <label><input type="radio" name="alcohol" value="Daily"><span>Daily</span></label>
+      </div>
+    </div>
+
+    <div class="choice-block">
+      <div class="choice-label">Tobacco or nicotine:</div>
+      <div class="choice-opts">
+        <label><input type="radio" name="nicotine" value="Never used"><span>Never used</span></label>
+        <label><input type="radio" name="nicotine" value="Former user, quit"><span>Former user, quit</span></label>
+        <label><input type="radio" name="nicotine" value="Current occasional"><span>Current occasional</span></label>
+        <label><input type="radio" name="nicotine" value="Current daily"><span>Current daily</span></label>
+      </div>
+    </div>
+
+    <div class="choice-block">
+      <div class="choice-label">Other substances:</div>
+      <div class="choice-opts">
+        <label><input type="radio" name="other_sub" value="None"><span>None</span></label>
+        <label><input type="radio" name="other_sub" value="Occasional"><span>Occasional</span></label>
+        <label><input type="radio" name="other_sub" value="Regular"><span>Regular</span></label>
+      </div>
+    </div>
+
+    <!-- SAFETY -->
+    <div class="section">
+      <div class="section-title">One More</div>
+    </div>
+
+    <div class="safety-box">
+      <p>Have you had any thoughts recently of not wanting to be here, or of hurting yourself in some way?</p>
+      <div class="choice-opts" style="margin-bottom:14px">
+        <label><input type="radio" name="safety" value="No"><span>No</span></label>
+        <label><input type="radio" name="safety" value="Yes, but not recently"><span>Yes, but not recently</span></label>
+        <label><input type="radio" name="safety" value="Yes, recently"><span>Yes, recently</span></label>
+      </div>
+      <div class="field-group"><label>If yes, say more if you are willing:</label><textarea name="safety_text" rows="2"></textarea></div>
+    </div>
+
+    <!-- ANYTHING ELSE -->
+    <div class="section">
+      <div class="section-title">Anything Else</div>
+    </div>
+
+    <div class="q-block">
+      <label class="q-label">Is there anything you want me to know before we talk?</label>
+      <textarea name="q1" rows="5"></textarea>
+    </div>
+
+    <div class="submit-wrap no-print">
+      <button type="submit" class="btn-submit" id="submit-btn">Send to Mike</button>
+    </div>
+    <div class="msg success" id="msg-success">
+      Thank you. Your wellness inventory has been sent. Mike will read it before your discovery call.
+    </div>
+    <div class="msg error" id="msg-error">
+      Something went wrong sending the form. Please email Mike directly at the contact information he provided.
+    </div>
+
+  </form>
+<div class="results-panel" id="results-panel">
+  <h2>PICKIN’ UP THOSE PEACES · Wellness Inventory</h2>
+  <div class="sent-note">Your responses have been sent to Mike. A copy is shown below for your records.</div>
+  <div id="results-content"></div>
+  <button class="btn-print no-print" onclick="window.print()">Print Your Responses</button>
+</div>
+</div>
+
+<script>
+emailjs.init('9-AsILd_Lat9pm48a');
+
+document.getElementById('wi-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const fd = new FormData(this);
+  const get = k => fd.get(k) || '(left blank)';
+
+  const lines = [
+    '════════════════════════════════',
+    'WELLNESS INVENTORY',
+    'Submitted: ' + new Date().toLocaleString(),
+    '════════════════════════════════',
+    '',
+    'CLIENT',
+    'Name: ' + get('client_name'),
+    'Email: ' + get('client_email'),
+    'Phone: ' + get('client_phone'),
+    'Date: ' + get('date_completed'),
+    '',
+    '── BODY ──',
+    'Physical health overall: ' + get('body_health') + '/10',
+    'Movement and exercise: ' + get('body_movement') + '/10',
+    'Sleep: ' + get('body_sleep') + '/10',
+    'Nutrition: ' + get('body_nutrition') + '/10',
+    'Energy: ' + get('body_energy') + '/10',
+    'Relationship with substances: ' + get('body_substances') + '/10',
+    '',
+    '── MIND ──',
+    'Mental and emotional wellbeing: ' + get('mind_wellbeing') + '/10',
+    'Stress and how you handle it: ' + get('mind_stress') + '/10',
+    'Clarity and focus: ' + get('mind_clarity') + '/10',
+    '',
+    '── LIFE ──',
+    'Social connection: ' + get('life_connection') + '/10',
+    'Purpose and meaning: ' + get('life_purpose') + '/10',
+    'Overall gratitude: ' + get('life_satisfaction') + '/10',
+    '',
+    '── READINESS ──',
+    'Importance of making changes: ' + get('r_importance') + '/10',
+    'Confidence in making changes: ' + get('r_confidence') + '/10',
+    '',
+    '── STATUS CHECKS ──',
+    'Alcohol: ' + get('alcohol'),
+    'Nicotine/tobacco: ' + get('nicotine'),
+    'Other substances: ' + get('other_sub'),
+    '',
+    '── SAFETY ──',
+    'Thoughts of self-harm: ' + get('safety'),
+    'Detail: ' + get('safety_text'),
+    '',
+    '── ANYTHING ELSE ──',
+    'Is there anything you want me to know before we talk?',
+    get('q1'),
+  ];
+
+  emailjs.send('service_v4dxl9i', 'template_u5addae', {
+    from_name: get('client_name'),
+    email: get('client_email'),
+    form_name: 'Wellness Inventory',
+    subject: 'Wellness Inventory: ' + get('client_name'),
+    message: lines.join('\n')
+  }).then(function() {
+    document.getElementById('wi-form').style.display = 'none';
+    var panel = document.getElementById('results-panel');
+    var content = document.getElementById('results-content');
+    panel.style.display = 'block';
+    content.innerHTML =
+      '<div class="results-section"><h3>CLIENT</h3>' +
+      '<div class="results-row"><span class="label">Name</span><span class="value">' + get('client_name') + '</span></div>' +
+      '<div class="results-row"><span class="label">Email</span><span class="value">' + get('client_email') + '</span></div>' +
+      '<div class="results-row"><span class="label">Phone</span><span class="value">' + get('client_phone') + '</span></div>' +
+      '<div class="results-row"><span class="label">Date</span><span class="value">' + get('date_completed') + '</span></div></div>' +
+      '<div class="results-section"><h3>BODY</h3>' +
+      '<div class="results-row"><span class="label">Physical health overall</span><span class="value">' + get('body_health') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Movement and exercise</span><span class="value">' + get('body_movement') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Sleep</span><span class="value">' + get('body_sleep') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Nutrition</span><span class="value">' + get('body_nutrition') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Energy</span><span class="value">' + get('body_energy') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Relationship with substances</span><span class="value">' + get('body_substances') + '/10</span></div></div>' +
+      '<div class="results-section"><h3>MIND</h3>' +
+      '<div class="results-row"><span class="label">Mental and emotional wellbeing</span><span class="value">' + get('mind_wellbeing') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Stress and how you handle it</span><span class="value">' + get('mind_stress') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Clarity and focus</span><span class="value">' + get('mind_clarity') + '/10</span></div></div>' +
+      '<div class="results-section"><h3>LIFE</h3>' +
+      '<div class="results-row"><span class="label">Social connection</span><span class="value">' + get('life_connection') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Purpose and meaning</span><span class="value">' + get('life_purpose') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Overall gratitude</span><span class="value">' + get('life_satisfaction') + '/10</span></div></div>' +
+      '<div class="results-section"><h3>READINESS</h3>' +
+      '<div class="results-row"><span class="label">Importance of making changes</span><span class="value">' + get('r_importance') + '/10</span></div>' +
+      '<div class="results-row"><span class="label">Confidence in making changes</span><span class="value">' + get('r_confidence') + '/10</span></div></div>' +
+      '<div class="results-section"><h3>STATUS CHECKS</h3>' +
+      '<div class="results-row"><span class="label">Alcohol</span><span class="value">' + get('alcohol') + '</span></div>' +
+      '<div class="results-row"><span class="label">Nicotine / tobacco</span><span class="value">' + get('nicotine') + '</span></div>' +
+      '<div class="results-row"><span class="label">Other substances</span><span class="value">' + get('other_sub') + '</span></div>' +
+      '<div class="results-row"><span class="label">Thoughts of self-harm</span><span class="value">' + get('safety') + '</span></div></div>' +
+      '<div class="results-section"><h3>YOUR RESPONSES</h3>' +
+      '<p style="font-size:12px;color:#666;font-style:italic;margin-bottom:8px">Is there anything you want me to know before we talk?</p><div class="results-text">' + get('q1') + '</div></div>';
+  }, function() {
+    document.getElementById('msg-error').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send to Mike';
+  });
+});
+</script>
+</body>
+</html>
