@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ground Truth Survey — Pickin' Up Those Peaces</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #F7F2EC; color: #2C2C2C; padding: 24px 16px 60px; }
+  .container { max-width: 640px; margin: 0 auto; }
+
+  .brand { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #1B3A4B; text-transform: uppercase; margin-bottom: 6px; }
+  .rule { border: none; border-top: 3px solid #7B5733; margin: 8px 0 14px; }
+  .doc-title { font-size: 22px; color: #7B5733; font-style: italic; margin-bottom: 4px; }
+  .doc-sub { font-size: 12px; color: #999; margin-bottom: 28px; }
+
+  .callout { background: #EEF3F6; border-left: 5px solid #1B3A4B; padding: 16px 18px; border-radius: 4px; margin-bottom: 28px; }
+  .callout strong { display: block; color: #1B3A4B; font-size: 14px; margin-bottom: 6px; }
+  .callout p { color: #2C2C2C; font-size: 13px; line-height: 1.5; }
+
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+  .meta-field label { display: block; font-size: 12px; font-weight: 700; color: #1B3A4B; margin-bottom: 6px; }
+  .meta-field input { width: 100%; border: none; border-bottom: 2px solid #C8BEB4; background: transparent; padding: 6px 0; font-size: 14px; color: #2C2C2C; outline: none; }
+
+  .ratings-intro { margin-bottom: 20px; }
+  .ratings-intro strong { display: block; font-size: 14px; color: #1B3A4B; margin-bottom: 4px; }
+  .ratings-intro p { font-size: 13px; color: #666; font-style: italic; }
+
+  .rating-block { background: #fff; border: 1px solid #E0D8D0; border-radius: 6px; margin-bottom: 14px; overflow: hidden; }
+  .rating-label { background: #F7F2EC; border-bottom: 1px solid #E0D8D0; padding: 12px 16px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .rating-label strong { font-size: 15px; color: #1B3A4B; white-space: nowrap; }
+  .rating-label span { font-size: 12px; color: #888; font-style: italic; flex: 1; }
+  .rating-selected { font-size: 22px; font-weight: 700; color: #7B5733; min-width: 36px; text-align: right; white-space: nowrap; }
+
+  .number-row { display: flex; padding: 10px 12px; gap: 5px; }
+  .num-btn { flex: 1; height: 36px; border: 1.5px solid #DDD; border-radius: 4px; background: #fff;
+    font-size: 13px; font-weight: 700; color: #666; cursor: pointer; transition: all 0.15s; padding: 0; }
+  .num-btn:hover { border-color: #7B5733; color: #7B5733; }
+  .num-btn.low { background: #FDF0EE; color: #8B3A3A; border-color: #E8C8C4; }
+  .num-btn.high { background: #EEF7EE; color: #2B5E4F; border-color: #B8D8C8; }
+  .num-btn.selected { border-color: #1B3A4B; background: #1B3A4B; color: #fff; }
+  .num-btn.selected.low { background: #8B3A3A; border-color: #8B3A3A; }
+  .num-btn.selected.high { background: #2B5E4F; border-color: #2B5E4F; }
+
+  /* Last Week block */
+  .lastweek-block { background: #fff; border: 1px solid #E0D8D0; border-radius: 6px; margin-top: 28px; margin-bottom: 28px; overflow: hidden; }
+  .lastweek-hdr { background: #1B3A4B; padding: 12px 16px; }
+  .lastweek-hdr strong { color: #fff; font-size: 15px; }
+  .lastweek-ends { background: #F7F2EC; border-bottom: 1px solid #E0D8D0; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .lastweek-ends .end-challenge { font-size: 13px; font-weight: 700; color: #8B3A3A; }
+  .lastweek-ends .end-success { font-size: 13px; font-weight: 700; color: #2B5E4F; }
+  .lastweek-ends .lw-selected { font-size: 22px; font-weight: 700; color: #7B5733; min-width: 36px; text-align: center; }
+  .lastweek-sub { font-size: 12px; color: #888; font-style: italic; text-align: center; flex: 1; }
+
+  .open-field { margin-top: 28px; }
+  .open-field label { display: block; font-size: 13px; font-weight: 700; color: #1B3A4B; margin-bottom: 8px; padding-left: 14px; border-left: 4px solid #7B5733; }
+  .open-field textarea { width: 100%; border: 1px solid #C8BEB4; border-radius: 4px; padding: 12px; font-size: 13px; font-family: Arial, sans-serif; color: #2C2C2C; background: #F7F2EC; resize: vertical; min-height: 90px; outline: none; }
+  .open-field textarea:focus { border-color: #1B3A4B; }
+
+  .submit-wrap { margin-top: 32px; text-align: center; }
+  .submit-btn { background: #1B3A4B; color: #fff; border: none; padding: 14px 48px; font-size: 15px; font-weight: 700; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; }
+  .submit-btn:hover { background: #7B5733; }
+  .submit-btn:disabled { background: #999; cursor: not-allowed; }
+
+  .status { margin-top: 20px; padding: 14px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; text-align: center; display: none; }
+  .status.success { background: #EEF7EE; color: #2B5E4F; border: 1px solid #B8D8C8; }
+  .status.error { background: #FDF0EE; color: #8B3A3A; border: 1px solid #E8C8C4; }
+
+  .footer-note { margin-top: 40px; text-align: center; font-size: 11px; color: #BBBBBB; }
+
+  .results-panel{display:none;background:#fff;border:1.5px solid #C8BEB4;border-radius:6px;padding:24px;margin-top:20px}
+  .results-panel h2{color:#1B3A4B;font-size:17px;margin-bottom:6px;font-family:Arial,sans-serif}
+  .results-sent{color:#2B5E4F;font-size:13px;margin-bottom:20px;font-style:italic;font-family:Arial,sans-serif}
+  .results-section{margin-bottom:16px}
+  .results-section h3{color:#7B5733;font-size:13px;font-weight:700;border-bottom:1px solid #E0D8D0;padding-bottom:4px;margin-bottom:8px;font-family:Arial,sans-serif;text-transform:uppercase}
+  .results-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#2C2C2C;padding:5px 0;border-bottom:1px solid #F4F4F4;font-family:Arial,sans-serif}
+  .results-row .lbl{color:#666}
+  .results-row .val{font-weight:700;color:#1B3A4B;font-size:15px}
+  .results-text{font-size:13px;color:#2C2C2C;line-height:1.6;white-space:pre-wrap;font-family:Arial,sans-serif;padding-left:8px;border-left:3px solid #E0D8D0;margin-top:4px}
+  .btn-print{background:#7B5733;color:#fff;border:none;padding:10px 28px;font-size:13px;font-weight:700;border-radius:4px;cursor:pointer;margin-top:16px;font-family:Arial,sans-serif;display:block}
+  .btn-print:hover{background:#1B3A4B}
+  @media print{
+    .no-print{display:none!important}
+    .results-panel{display:block!important;border:none;padding:8px 0}
+    body{background:#fff!important;padding:16px}
+    .btn-print{display:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="brand">Pickin&rsquo; Up Those Peaces</div>
+  <hr class="rule">
+  <div class="doc-title">Ground Truth Survey</div>
+  <div class="doc-sub">Complete before each session &nbsp;&middot;&nbsp; Six items &nbsp;&middot;&nbsp; Under two minutes</div>
+
+  <div class="callout">
+    <strong>Six quick ratings. Under two minutes. That&rsquo;s all I need.</strong>
+    <p>Fill this in and send it back at least an hour before we talk. I read it before every session. It tells me where you are before I ask.</p>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-field">
+      <label>Your Name</label>
+      <input type="text" id="client_name" placeholder="Full name">
+    </div>
+    <div class="meta-field">
+      <label>Session Date</label>
+      <input type="date" id="session_date">
+    </div>
+  </div>
+
+  <div class="ratings-intro">
+    <strong>Rate each item from 1 to 10.</strong>
+    <p>1 = as low as it gets. &nbsp; 10 = as good as it gets. &nbsp; No right answers.</p>
+  </div>
+
+  <div id="ratings"></div>
+
+  <!-- Last Week Overall -->
+  <div class="lastweek-block">
+    <div class="lastweek-hdr"><strong>Last Week Overall</strong></div>
+    <div class="lastweek-ends">
+      <span class="end-challenge">&larr; Challenge</span>
+      <span class="lastweek-sub">How did all of last week feel in general?</span>
+      <div class="lw-selected" id="lw_selected">--</div>
+      <span class="end-success">Success &rarr;</span>
+    </div>
+    <div class="number-row" id="lw_row"></div>
+  </div>
+
+  <div class="open-field">
+    <label>Anything you want me to know before we talk today?</label>
+    <textarea id="open_notes" placeholder="Optional. Whatever is on your mind."></textarea>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn no-print" id="submit_btn" onclick="submitForm()">Send to Mike</button>
+    <div class="status" id="status_msg"></div>
+  </div>
+
+  <div class="results-panel" id="results-panel">
+  <h2>PICKIN’ UP THOSE PEACES · Ground Truth Survey</h2>
+  <div class="results-sent">Your survey has been sent to Mike. Your ratings are shown below for your records.</div>
+  <div id="results-content"></div>
+  <button class="btn-print no-print" onclick="window.print()">Print Your Responses</button>
+</div>
+<div class="footer-note">Pickin&rsquo; Up Those Peaces &nbsp;&middot;&nbsp; Ground Truth Survey &nbsp;&middot;&nbsp; 2026</div>
+</div>
+
+<script>
+  (function(){emailjs.init('9-AsILd_Lat9pm48a');})();
+
+  var categories = [
+    {id:'body',   label:'Body',   desc:'How does your body feel right now?'},
+    {id:'energy', label:'Energy', desc:'What is your energy level?'},
+    {id:'stress', label:'Stress', desc:'How are you managing stress right now?'},
+    {id:'mood',   label:'Mood',   desc:'How is your mood today?'},
+    {id:'sleep',  label:'Sleep',  desc:'How have you been sleeping?'},
+  ];
+
+  var scores = {};
+  var lastWeekScore = null;
+
+  function getBtnClass(n){ return n<=3?'low':n>=8?'high':''; }
+
+  function buildRatings(){
+    var container = document.getElementById('ratings');
+    categories.forEach(function(cat){
+      var block = document.createElement('div');
+      block.className = 'rating-block';
+      var labelRow = document.createElement('div');
+      labelRow.className = 'rating-label';
+      labelRow.innerHTML = '<strong>'+cat.label+'</strong><span>'+cat.desc+'</span><div class="rating-selected" id="sel_'+cat.id+'">--</div>';
+      block.appendChild(labelRow);
+      var numRow = document.createElement('div');
+      numRow.className = 'number-row';
+      for(var i=1;i<=10;i++){
+        (function(n){
+          var btn = document.createElement('button');
+          btn.className = 'num-btn '+getBtnClass(n);
+          btn.textContent = n;
+          btn.id = 'btn_'+cat.id+'_'+n;
+          btn.onclick = function(){
+            for(var j=1;j<=10;j++){
+              document.getElementById('btn_'+cat.id+'_'+j).className='num-btn '+getBtnClass(j);
+            }
+            btn.className='num-btn '+getBtnClass(n)+' selected';
+            scores[cat.id]=n;
+            document.getElementById('sel_'+cat.id).textContent=n+'/10';
+          };
+          numRow.appendChild(btn);
+        })(i);
+      }
+      block.appendChild(numRow);
+      container.appendChild(block);
+    });
+  }
+
+  function buildLastWeek(){
+    var row = document.getElementById('lw_row');
+    for(var i=1;i<=10;i++){
+      (function(n){
+        var btn = document.createElement('button');
+        btn.className = 'num-btn '+getBtnClass(n);
+        btn.textContent = n;
+        btn.id = 'lw_btn_'+n;
+        btn.onclick = function(){
+          for(var j=1;j<=10;j++){
+            document.getElementById('lw_btn_'+j).className='num-btn '+getBtnClass(j);
+          }
+          btn.className='num-btn '+getBtnClass(n)+' selected';
+          lastWeekScore=n;
+          document.getElementById('lw_selected').textContent=n+'/10';
+        };
+        row.appendChild(btn);
+      })(i);
+    }
+  }
+
+  buildRatings();
+  buildLastWeek();
+
+  function submitForm(){
+    var name = document.getElementById('client_name').value.trim();
+    var date = document.getElementById('session_date').value;
+    var notes = document.getElementById('open_notes').value.trim();
+    var btn = document.getElementById('submit_btn');
+    var status = document.getElementById('status_msg');
+
+    if(!name){alert('Please enter your name.');return;}
+    var missing = categories.filter(function(c){return !scores[c.id];}).map(function(c){return c.label;});
+    if(missing.length>0){alert('Please rate: '+missing.join(', ')+'.');return;}
+    if(!lastWeekScore){alert('Please rate Last Week Overall.');return;}
+
+    btn.disabled=true; btn.textContent='Sending...';
+
+    var lwLabel = lastWeekScore<=3?'Challenge':lastWeekScore>=8?'Success':'Mixed';
+    var lines=[
+      'GROUND TRUTH SURVEY',
+      'Submitted: '+new Date().toLocaleString(),
+      '',
+      'CLIENT',
+      'Name: '+name,
+      'Session Date: '+(date||'not specified'),
+      '',
+      '--- RATINGS ---',
+    ];
+    categories.forEach(function(cat){ lines.push(cat.label+': '+scores[cat.id]+'/10'); });
+    lines.push('Last Week Overall: '+lastWeekScore+'/10 ('+lwLabel+')');
+    lines.push('');
+    lines.push('--- PRE-SESSION NOTES ---');
+    lines.push(notes||'(none)');
+
+    emailjs.send('service_v4dxl9i','template_u5addae',{
+      from_name: name,
+      email: 'cavettmc@gmail.com',
+      subject: 'Ground Truth Survey \u2014 '+name+(date?' \u2014 '+date:''),
+      message: lines.join('\n'),
+    }).then(function(){
+      btn.textContent='Sent';
+      status.className='status success no-print'; status.style.display='block';
+      status.textContent='Received. See you in the session.';
+      document.getElementById('results-panel').style.display='block';
+      var lwLabel = lastWeekScore<=3?'Challenge ('+lastWeekScore+'/10)':lastWeekScore>=8?'Success ('+lastWeekScore+'/10)':'Mixed ('+lastWeekScore+'/10)';
+      var name = document.getElementById('client_name').value.trim();
+      var date = document.getElementById('session_date').value;
+      document.getElementById('results-content').innerHTML =
+        '<div class="results-section"><h3>Session</h3>' +
+        '<div class="results-row"><span class="lbl">Name</span><span class="val">'+name+'</span></div>' +
+        (date?'<div class="results-row"><span class="lbl">Session Date</span><span class="val">'+date+'</span></div>':'') +
+        '</div><div class="results-section"><h3>Your Ratings</h3>' +
+        categories.map(function(cat){return '<div class="results-row"><span class="lbl">'+cat.label+'</span><span class="val">'+scores[cat.id]+' / 10</span></div>';}).join('') +
+        '<div class="results-row"><span class="lbl">Last Week Overall</span><span class="val">'+lwLabel+'</span></div></div>' +
+        (document.getElementById('open_notes').value.trim()?
+          '<div class="results-section"><h3>Your Notes</h3><div class="results-text">'+document.getElementById('open_notes').value.trim()+'</div></div>':'');
+    },function(err){
+      btn.disabled=false; btn.textContent='Send to Mike';
+      status.className='status error'; status.style.display='block';
+      status.textContent='Something went wrong. Try again or email Mike directly.';
+      console.error(err);
+    });
+  }
+</script>
+</body>
+</html>
