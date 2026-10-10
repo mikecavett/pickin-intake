@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Screening — Pickin' Up Those Peaces</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F7F2EC;color:#2C2C2C;line-height:1.5}
+.page{max-width:680px;margin:0 auto;padding:32px 20px 60px}
+.brand{text-align:center;padding:28px 0 0}
+.brand-name{font-size:22px;font-weight:700;color:#1B3A4B;letter-spacing:.04em}
+.doc-title{font-size:15px;font-style:italic;color:#777;margin:6px 0 12px}
+.brand-rule{border:none;border-top:1.5px solid #7B5733;margin:0 0 8px}
+.doc-sub{font-size:12px;color:#AAAAAA;text-align:center;margin-bottom:28px}
+.callout{background:white;border-left:4px solid #7B5733;padding:18px 20px;margin:0 0 28px;border-radius:0 4px 4px 0}
+.callout p{font-size:13.5px;color:#333;margin-bottom:8px}
+.callout p:last-child{margin-bottom:0}
+.crisis{background:#FFF5F5;border:1.5px solid #8B3A3A;border-radius:6px;padding:14px 16px;margin:14px 0}
+.crisis p{font-size:13px;color:#8B3A3A;font-weight:600}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.field-group label{display:block;font-size:11px;font-weight:600;color:#1B3A4B;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field-group input{width:100%;border:none;border-bottom:1.5px solid #C8BEB4;background:transparent;padding:6px 0;font-size:14px;color:#2C2C2C;outline:none}
+.field-group input:focus{border-bottom-color:#1B3A4B}
+.field-group textarea{width:100%;border:1.5px solid #C8BEB4;border-radius:4px;padding:8px;font-size:13.5px;color:#2C2C2C;font-family:inherit;resize:vertical;outline:none;margin-top:4px}
+.field-group textarea:focus{border-color:#1B3A4B}
+.section{margin:28px 0 10px}
+.section-title{font-size:11px;font-weight:700;color:#1B3A4B;letter-spacing:.08em;text-transform:uppercase;padding-bottom:4px;border-bottom:1.5px solid #7B5733;margin-bottom:6px}
+.section-sub{font-size:11.5px;font-style:italic;color:#888;margin-bottom:12px}
+/* Scored questions */
+.sq{margin-bottom:14px;padding:10px 12px;background:white;border-radius:4px;border:1px solid #EEE}
+.sq-label{font-size:13px;color:#333;margin-bottom:8px}
+.sq-letter{font-weight:700;color:#7B5733;margin-right:4px}
+.sq-opts{display:flex;flex-wrap:wrap;gap:6px}
+.sq-opts label{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;cursor:pointer;padding:5px 10px;border:1.5px solid #DDD;border-radius:16px;background:white;transition:all .15s}
+.sq-opts label:hover{border-color:#7B5733}
+.sq-opts label:has(input:checked){border-color:#1B3A4B;background:#EEF3F6;color:#1B3A4B;font-weight:600}
+.sq-opts input{width:13px;height:13px;accent-color:#1B3A4B}
+/* Yes/No */
+.yn{margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;padding:8px 12px;background:white;border-radius:4px;border:1px solid #EEE}
+.yn-q{flex:1;font-size:13px;color:#333}
+.yn-letter{font-weight:700;color:#7B5733;margin-right:4px}
+.yn-opts{display:flex;gap:8px;flex-shrink:0;margin-top:1px}
+.yn-opts label{display:flex;align-items:center;gap:4px;font-size:12px;color:#555;cursor:pointer;padding:4px 10px;border:1.5px solid #DDD;border-radius:12px;background:white;transition:all .15s;white-space:nowrap}
+.yn-opts label:has(input:checked){border-color:#1B3A4B;background:#EEF3F6;color:#1B3A4B;font-weight:600}
+.yn-opts input{width:13px;height:13px;accent-color:#1B3A4B}
+.yn-note{font-size:11px;font-style:italic;color:#888;margin-top:2px}
+/* Choice row */
+.choice-block{margin-bottom:16px}
+.choice-label{font-size:13.5px;font-weight:600;color:#2C2C2C;margin-bottom:8px}
+.choice-sub{font-size:11px;color:#888;font-style:italic;margin-bottom:8px}
+.choice-opts{display:flex;flex-wrap:wrap;gap:8px}
+.choice-opts label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#444;cursor:pointer;padding:6px 12px;border:1.5px solid #DDDDDD;border-radius:20px;transition:all .15s;background:white}
+.choice-opts label:has(input:checked){border-color:#1B3A4B;background:#EEF3F6;color:#1B3A4B;font-weight:600}
+.choice-opts input{width:14px;height:14px;accent-color:#1B3A4B}
+/* Safety */
+.safety-box{background:white;border:1.5px solid #1B3A4B;border-radius:6px;padding:16px 18px;margin:20px 0}
+.safety-box p{font-size:13.5px;font-weight:600;color:#2C2C2C;margin-bottom:12px}
+.submit-wrap{text-align:center;margin-top:36px}
+.btn-submit{background:#1B3A4B;color:white;border:none;padding:14px 48px;font-size:14px;font-weight:600;border-radius:4px;cursor:pointer;letter-spacing:.04em;transition:background .2s}
+.btn-submit:hover{background:#264d61}
+.btn-submit:disabled{background:#aaa;cursor:default}
+.msg{display:none;text-align:center;padding:20px;border-radius:6px;font-size:14px;margin-top:20px}
+.msg.success{background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7}
+  .results-panel{display:none;background:#fff;border:1.5px solid #C8BEB4;border-radius:6px;padding:24px;margin-top:20px}
+  .results-panel h2{color:#1B3A4B;font-size:17px;margin-bottom:6px;font-family:Arial,sans-serif}
+  .results-sent{color:#2B5E4F;font-size:13px;margin-bottom:20px;font-style:italic;font-family:Arial,sans-serif}
+  .results-section{margin-bottom:16px}
+  .results-section h3{color:#7B5733;font-size:13px;font-weight:700;border-bottom:1px solid #E0D8D0;padding-bottom:4px;margin-bottom:8px;font-family:Arial,sans-serif;text-transform:uppercase}
+  .results-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#2C2C2C;padding:4px 0;border-bottom:1px solid #F4F4F4;font-family:Arial,sans-serif}
+  .results-row .lbl{color:#666;flex:1}
+  .results-row .val{font-weight:700;color:#1B3A4B;margin-left:12px;white-space:nowrap}
+  .score-line{font-size:14px;font-weight:700;color:#1B3A4B;margin:8px 0 4px;font-family:Arial,sans-serif}
+  .results-text{font-size:13px;color:#2C2C2C;line-height:1.6;white-space:pre-wrap;font-family:Arial,sans-serif;margin-top:4px;padding-left:8px;border-left:3px solid #E0D8D0}
+  .results-q{font-size:12px;color:#666;font-style:italic;margin:14px 0 4px;font-family:Arial,sans-serif}
+  .btn-print{background:#7B5733;color:#fff;border:none;padding:10px 28px;font-size:13px;font-weight:700;border-radius:4px;cursor:pointer;margin-top:16px;font-family:Arial,sans-serif;display:block}
+  .btn-print:hover{background:#1B3A4B}
+  @media print{
+    .no-print{display:none!important}
+    .results-panel{display:block!important;border:none;padding:8px 0}
+    body{background:#fff!important;padding:16px}
+    .btn-print{display:none!important}
+  }
+.msg.error{background:#FFEBEE;color:#C62828;border:1.5px solid #FFCDD2}
+@media(max-width:500px){.field-row{grid-template-columns:1fr}.yn{flex-direction:column}.yn-opts{margin-top:8px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <div class="brand-name">PICKIN' UP THOSE PEACES</div>
+    <div class="doc-title">Health Screening</div>
+    <hr class="brand-rule">
+    <div class="doc-sub">Completed by every client as a standard part of intake</div>
+  </div>
+
+  <form id="hs-form" novalidate>
+
+    <div class="callout">
+      <p><strong>Before You Begin</strong></p>
+      <p>This packet uses standardized screening tools used widely across healthcare and coaching settings. You complete this as a standard part of intake, the same as every other client. It is not a judgment, and it is not a test you can pass or fail.</p>
+      <p>Answer where you actually are, not where you think you should be. Everything here is confidential between us.</p>
+    </div>
+
+    <div class="crisis">
+      <p>If you are in crisis right now: call or text 988 &nbsp;·&nbsp; Emergency services: 911</p>
+    </div>
+
+    <br>
+    <div class="field-row">
+      <div class="field-group"><label>Client Name</label><input type="text" name="client_name" required placeholder="Your full name"></div>
+      <div class="field-group"><label>Date Completed</label><input type="date" name="date_completed"></div>
+    </div>
+
+    <!-- SECTION 1: AUDIT -->
+    <div class="section">
+      <div class="section-title">Section 1: Alcohol</div>
+      <div class="section-sub">AUDIT — Alcohol Use Disorders Identification Test &nbsp;·&nbsp; For questions 1–8, select one answer.</div>
+    </div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">1.</span>How often do you have a drink containing alcohol?</div><div class="sq-opts">
+      <label><input type="radio" name="aud1" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud1" value="1 – Monthly or less"><span>Monthly or less</span></label>
+      <label><input type="radio" name="aud1" value="2 – 2–4 times/month"><span>2–4 times/month</span></label>
+      <label><input type="radio" name="aud1" value="3 – 2–3 times/week"><span>2–3 times/week</span></label>
+      <label><input type="radio" name="aud1" value="4 – 4+ times/week"><span>4+ times/week</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">2.</span>How many standard drinks on a typical drinking day?</div><div class="sq-opts">
+      <label><input type="radio" name="aud2" value="0 – 0 drinks"><span>0 drinks</span></label>
+      <label><input type="radio" name="aud2" value="0 – 1 or 2"><span>1 or 2</span></label>
+      <label><input type="radio" name="aud2" value="1 – 3 or 4"><span>3 or 4</span></label>
+      <label><input type="radio" name="aud2" value="2 – 5 or 6"><span>5 or 6</span></label>
+      <label><input type="radio" name="aud2" value="3 – 7 to 9"><span>7 to 9</span></label>
+      <label><input type="radio" name="aud2" value="4 – 10 or more"><span>10 or more</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">3.</span>How often do you have six or more drinks on one occasion?</div><div class="sq-opts">
+      <label><input type="radio" name="aud3" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud3" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud3" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud3" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud3" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">4.</span>How often in the last year could you not stop drinking once you started?</div><div class="sq-opts">
+      <label><input type="radio" name="aud4" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud4" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud4" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud4" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud4" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">5.</span>How often in the last year did you fail to do what was normally expected due to drinking?</div><div class="sq-opts">
+      <label><input type="radio" name="aud5" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud5" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud5" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud5" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud5" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">6.</span>How often in the last year did you need a morning drink after a heavy session?</div><div class="sq-opts">
+      <label><input type="radio" name="aud6" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud6" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud6" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud6" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud6" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">7.</span>How often in the last year did you feel guilt or remorse after drinking?</div><div class="sq-opts">
+      <label><input type="radio" name="aud7" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud7" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud7" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud7" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud7" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">8.</span>How often in the last year were you unable to remember what happened due to drinking?</div><div class="sq-opts">
+      <label><input type="radio" name="aud8" value="0 – Never"><span>Never</span></label>
+      <label><input type="radio" name="aud8" value="1 – Less than monthly"><span>Less than monthly</span></label>
+      <label><input type="radio" name="aud8" value="2 – Monthly"><span>Monthly</span></label>
+      <label><input type="radio" name="aud8" value="3 – Weekly"><span>Weekly</span></label>
+      <label><input type="radio" name="aud8" value="4 – Daily or almost daily"><span>Daily or almost daily</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">9.</span>Have you or someone else been injured as a result of your drinking?</div><div class="sq-opts">
+      <label><input type="radio" name="aud9" value="0 – No"><span>No</span></label>
+      <label><input type="radio" name="aud9" value="2 – Yes, not in the last year"><span>Yes, not in the last year</span></label>
+      <label><input type="radio" name="aud9" value="4 – Yes, during the last year"><span>Yes, during the last year</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">10.</span>Has a relative, friend, or health worker been concerned about your drinking or suggested you cut down?</div><div class="sq-opts">
+      <label><input type="radio" name="aud10" value="0 – No"><span>No</span></label>
+      <label><input type="radio" name="aud10" value="2 – Yes, not in the last year"><span>Yes, not in the last year</span></label>
+      <label><input type="radio" name="aud10" value="4 – Yes, during the last year"><span>Yes, during the last year</span></label>
+    </div></div>
+
+    <!-- SECTION 2: DAST-10 -->
+    <div class="section">
+      <div class="section-title">Section 2: Substance Use</div>
+      <div class="section-sub">DAST-10 — "Drug use" = non-medical use of drugs or medications used beyond directions. Past 12 months.</div>
+    </div>
+
+    <script>
+    const dastQs = [
+      ['dast1','Have you used drugs other than those required for medical reasons?',null],
+      ['dast2','Do you use more than one drug at a time?',null],
+      ['dast3','Are you always able to stop using drugs when you want to?',null],
+      ['dast4','Have you ever had blackouts or flashbacks as a result of drug use?',null],
+      ['dast5','Do you ever feel bad or guilty about your drug use?',null],
+      ['dast6','Does your spouse, partner, or parent ever complain about your drug use?',null],
+      ['dast7','Have you neglected your family because of your use of drugs?',null],
+      ['dast8','Have you engaged in illegal activities in order to obtain drugs?',null],
+      ['dast9','Have you ever experienced withdrawal symptoms when you stopped taking drugs?',null],
+      ['dast10','Have you had medical problems as a result of your drug use?',null],
+    ];
+    dastQs.forEach(([name,q,note],i)=>{
+      const letter = i+1;
+      document.write(`<div class="yn">
+        <div class="yn-q"><span class="yn-letter">${letter}.</span>${q}${note?`<div class="yn-note">${note}</div>`:''}</div>
+        <div class="yn-opts">
+          <label><input type="radio" name="${name}" value="1 – Yes"><span>Yes</span></label>
+          <label><input type="radio" name="${name}" value="0 – No"><span>No</span></label>
+        </div>
+      </div>`);
+    });
+    </script>
+
+    <!-- SECTION 3: FAGERSTROM -->
+    <div class="section">
+      <div class="section-title">Section 3: Tobacco and Nicotine</div>
+    </div>
+
+    <div class="sq" style="background:#EEF3F6;border-left:4px solid #1B3A4B;border-radius:4px">
+      <div class="sq-label" style="font-weight:700;color:#1B3A4B">Do you currently smoke cigarettes?</div>
+      <div class="sq-opts">
+        <label style="border-color:#1B3A4B"><input type="radio" name="smokes" value="yes" onclick="document.getElementById('fag-section').style.display='block';document.getElementById('fag-skip').style.display='none'"><span style="color:#1B3A4B;font-weight:600">Yes</span></label>
+        <label style="border-color:#8B3A3A"><input type="radio" name="smokes" value="no" onclick="document.getElementById('fag-section').style.display='none';document.getElementById('fag-skip').style.display='block'"><span style="color:#8B3A3A;font-weight:600">No</span></label>
+      </div>
+    </div>
+
+    <div id="fag-skip" style="display:none;padding:10px 14px;background:#F4F4F4;border-radius:4px;font-size:13px;color:#666;margin-bottom:8px;font-style:italic">
+      Fagerström Test skipped — not a current smoker.
+      <input type="hidden" name="fag_skipped" value="1">
+    </div>
+
+    <div id="fag-section" style="display:none">
+    <p style="font-size:12px;color:#666;font-style:italic;margin:8px 0 12px;padding-left:4px">Fagerström Test — Answer all six questions below.</p>
+    <div class="sq"><div class="sq-label"><span class="sq-letter">1.</span>How soon after you wake up do you smoke your first cigarette?</div><div class="sq-opts">
+      <label><input type="radio" name="fag1" value="0 – After 60 min"><span>After 60 min</span></label>
+      <label><input type="radio" name="fag1" value="1 – 31–60 min"><span>31–60 min</span></label>
+      <label><input type="radio" name="fag1" value="2 – 6–30 min"><span>6–30 min</span></label>
+      <label><input type="radio" name="fag1" value="3 – Within 5 min"><span>Within 5 min</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">2.</span>Do you find it difficult to refrain from smoking in forbidden places?</div><div class="sq-opts">
+      <label><input type="radio" name="fag2" value="0 – No"><span>No</span></label>
+      <label><input type="radio" name="fag2" value="1 – Yes"><span>Yes</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">3.</span>Which cigarette would you hate most to give up?</div><div class="sq-opts">
+      <label><input type="radio" name="fag3" value="0 – Any other"><span>Any other</span></label>
+      <label><input type="radio" name="fag3" value="1 – The first in the morning"><span>The first in the morning</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">4.</span>How many cigarettes a day do you smoke?</div><div class="sq-opts">
+      <label><input type="radio" name="fag4" value="0 – 10 or fewer"><span>10 or fewer</span></label>
+      <label><input type="radio" name="fag4" value="1 – 11–20"><span>11–20</span></label>
+      <label><input type="radio" name="fag4" value="2 – 21–30"><span>21–30</span></label>
+      <label><input type="radio" name="fag4" value="3 – 31 or more"><span>31 or more</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">5.</span>Do you smoke more in the first hours after waking than during the rest of the day?</div><div class="sq-opts">
+      <label><input type="radio" name="fag5" value="0 – No"><span>No</span></label>
+      <label><input type="radio" name="fag5" value="1 – Yes"><span>Yes</span></label>
+    </div></div>
+
+    <div class="sq"><div class="sq-label"><span class="sq-letter">6.</span>Do you smoke even if you are so ill that you are in bed most of the day?</div><div class="sq-opts">
+      <label><input type="radio" name="fag6" value="0 – No"><span>No</span></label>
+      <label><input type="radio" name="fag6" value="1 – Yes"><span>Yes</span></label>
+    </div></div>
+
+    </div><!-- end fag-section -->
+
+    <div class="choice-block" style="margin-top:16px">
+      <div class="choice-label">Other Nicotine Products — Current Status:</div>
+      <div class="choice-opts">
+        <label><input type="radio" name="nic_status" value="Never used"><span>Never used</span></label>
+        <label><input type="radio" name="nic_status" value="Former user, quit"><span>Former user, quit</span></label>
+        <label><input type="radio" name="nic_status" value="Current occasional"><span>Current occasional</span></label>
+        <label><input type="radio" name="nic_status" value="Current daily"><span>Current daily</span></label>
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:8px"><label>If current, which product and interest in quitting (0–10)?</label><input type="text" name="nic_product"></div>
+
+    <!-- SECTION 4: PHQ-8 -->
+    <div class="section">
+      <div class="section-title">Section 4: Mood</div>
+      <div class="section-sub">PHQ-8 — Over the last 2 weeks, how often have you been bothered by any of the following?</div>
+    </div>
+
+    <script>
+    const phqQs = [
+      'Little interest or pleasure in doing things',
+      'Feeling down, depressed, or hopeless',
+      'Trouble falling or staying asleep, or sleeping too much',
+      'Feeling tired or having little energy',
+      'Poor appetite or overeating',
+      'Feeling bad about yourself, or that you are a failure, or have let yourself or your family down',
+      'Trouble concentrating on things, such as reading the newspaper or watching television',
+      'Moving or speaking so slowly that others could have noticed, or being so fidgety or restless that you moved around much more than usual',
+    ];
+    const phqOpts = [['0','Not at all'],['1','Several days'],['2','More than half the days'],['3','Nearly every day']];
+    phqQs.forEach((q,i)=>{
+      const letter = i+1;
+      document.write(`<div class="sq"><div class="sq-label"><span class="sq-letter">${letter}.</span>${q}</div><div class="sq-opts">`);
+      phqOpts.forEach(([v,l])=>{
+        document.write(`<label><input type="radio" name="phq${letter}" value="${v} – ${l}"><span>${l}</span></label>`);
+      });
+      document.write(`</div></div>`);
+    });
+    </script>
+
+    <!-- SAFETY -->
+    <div class="section">
+      <div class="section-title">One More Question</div>
+    </div>
+
+    <div class="safety-box">
+      <p>Over the last 2 weeks, have you had any thoughts of not wanting to be here, or of hurting yourself in some way?</p>
+      <div class="choice-opts" style="margin-bottom:14px">
+        <label><input type="radio" name="phq_safety" value="No"><span>No</span></label>
+        <label><input type="radio" name="phq_safety" value="Yes, but not in the last 2 weeks"><span>Yes, but not in the last 2 weeks</span></label>
+        <label><input type="radio" name="phq_safety" value="Yes, within the last 2 weeks"><span>Yes, within the last 2 weeks</span></label>
+      </div>
+      <div class="field-group"><label>If yes, say more if you are willing:</label><textarea name="phq_safety_text" rows="2"></textarea></div>
+    </div>
+
+    <div class="crisis" style="margin-top:16px">
+      <p>If you are in crisis right now: call or text 988 &nbsp;·&nbsp; Emergency services: 911</p>
+    </div>
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-submit no-print" id="submit-btn">Send to Mike</button>
+    </div>
+    <div class="msg success" id="msg-success">Thank you. Your health screening has been sent. Everything you shared is confidential.</div>
+    <div class="msg error" id="msg-error">Something went wrong. Please email Mike directly at the contact information he provided.</div>
+
+  </form>
+<div class="results-panel" id="results-panel">
+  <h2>PICKIN’ UP THOSE PEACES · Health Screening</h2>
+  <div class="results-sent">Your responses have been sent to Mike. Your scores are shown below for your records.</div>
+  <div id="results-content"></div>
+  <button class="btn-print no-print" onclick="window.print()">Print Your Responses</button>
+</div>
+</div>
+
+<script>
+emailjs.init('9-AsILd_Lat9pm48a');
+
+document.getElementById('hs-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const fd = new FormData(this);
+  const get = k => fd.get(k) || '—';
+
+  // Score totals
+  const auditKeys = ['aud1','aud2','aud3','aud4','aud5','aud6','aud7','aud8','aud9','aud10'];
+  const dastKeys = ['dast1','dast2','dast3','dast4','dast5','dast6','dast7','dast8','dast9','dast10'];
+  const phqKeys = ['phq1','phq2','phq3','phq4','phq5','phq6','phq7','phq8'];
+  const fag = ['fag1','fag2','fag3','fag4','fag5','fag6'];
+
+  const scoreOf = (keys) => keys.reduce((t,k)=>{const v=fd.get(k)||'';const n=parseInt(v.split('–')[0]);return t+(isNaN(n)?0:n);},0);
+  const auditTotal = scoreOf(auditKeys);
+  const dastTotal = scoreOf(dastKeys);
+  const phqTotal = scoreOf(phqKeys);
+  const fagTotal = scoreOf(fag);
+
+  const lines = [
+    '════════════════════════════════',
+    'HEALTH SCREENING',
+    'Client: ' + get('client_name'),
+    'Date: ' + get('date_completed'),
+    'Submitted: ' + new Date().toLocaleString(),
+    '════════════════════════════════',
+    '',
+    '── AUDIT (Alcohol) ──',
+    'TOTAL SCORE: ' + auditTotal + ' / 40',
+    ...[['aud1','How often you drink'],['aud2','Drinks on a typical day'],['aud3','Six or more drinks at once'],['aud4','Unable to stop once started'],['aud5','Failed expectations due to drinking'],['aud6','Morning drink to get going'],['aud7','Guilt or remorse after drinking'],['aud8','Unable to remember the night before'],['aud9','Injury as a result of drinking'],['aud10','Others concerned about your drinking']].map(([k,lbl])=>`${lbl}: ${get(k)}`),
+    '',
+    '── DAST-10 (Substance Use) ──',
+    'TOTAL SCORE: ' + dastTotal + ' / 10',
+    ...[['dast1','Non-medical drug use'],['dast2','More than one drug at a time'],['dast3','Able to stop when you want'],['dast4','Blackouts or flashbacks from drug use'],['dast5','Feeling bad or guilty about drug use'],['dast6','Family complaints about drug involvement'],['dast7','Neglecting family due to drug use'],['dast8','Illegal activities to obtain drugs'],['dast9','Withdrawal symptoms when stopping'],['dast10','Medical problems from drug use']].map(([k,lbl])=>`${lbl}: ${get(k)}`),
+    '',
+    '── FAGERSTRÖM (Nicotine) ──',
+    'Current smoker: ' + (fd.get('smokes') === 'no' ? 'No' : 'Yes'),
+    'TOTAL SCORE: ' + (fd.get('smokes') === 'no' ? 'N/A (non-smoker)' : fagTotal + ' / 10'),
+    ...(fd.get('smokes') === 'no' ? [] : [['fag1','Time to first cigarette after waking'],['fag2','Difficulty not smoking in forbidden places'],['fag3','Most valued cigarette of the day'],['fag4','Number of cigarettes per day'],['fag5','More smoking in first hours after waking'],['fag6','Smoking when ill and in bed']].map(([k,lbl])=>`${lbl}: ${get(k)}`)),
+    'Nicotine product status: ' + get('nic_status'),
+    'Product/quit interest: ' + get('nic_product'),
+    '',
+    '── PHQ-8 (Mood) ──',
+    'TOTAL SCORE: ' + phqTotal + ' / 24',
+    ...[['phq1','Little interest or pleasure in things'],['phq2','Feeling down, depressed, or hopeless'],['phq3','Trouble sleeping or sleeping too much'],['phq4','Feeling tired or low energy'],['phq5','Poor appetite or overeating'],['phq6','Feeling like a failure or letting others down'],['phq7','Trouble concentrating'],['phq8','Moving slowly or feeling restless']].map(([k,lbl])=>`${lbl}: ${get(k)}`),
+    '',
+    '── SAFETY ──',
+    'Self-harm question: ' + get('phq_safety'),
+    'Detail: ' + get('phq_safety_text'),
+  ];
+
+  emailjs.send('service_v4dxl9i', 'template_u5addae', {
+    from_name: get('client_name'),
+    email: 'cavettmc@gmail.com',
+    form_name: 'Health Screening',
+    subject: 'Health Screening — ' + get('client_name'),
+    message: lines.join('\n')
+  }, '9-AsILd_Lat9pm48a').then(()=>{
+    document.getElementById('hs-form').style.display='none';
+    document.getElementById('results-panel').style.display='block';
+    document.getElementById('results-content').innerHTML =
+      '<div class="results-section"><h3>Client</h3>' +
+      '<div class="results-row"><span class="lbl">Name</span><span class="val">' + get('client_name') + '</span></div>' +
+      '<div class="results-row"><span class="lbl">Date</span><span class="val">' + get('date_completed') + '</span></div></div>' +
+      '<div class="results-section"><h3>AUDIT · Alcohol Use</h3>' +
+      '<div class="score-line">Your score: ' + auditTotal + ' / 40</div>' +
+      [['aud1','How often you drink'],['aud2','Drinks on a typical day'],['aud3','Six or more drinks at once'],['aud4','Unable to stop once started'],['aud5','Failed expectations due to drinking'],['aud6','Morning drink to get going'],['aud7','Guilt or remorse after drinking'],['aud8','Unable to remember the night before'],['aud9','Injury as a result of drinking'],['aud10','Others concerned about your drinking']].map(([k,lbl])=>'<div class="results-row"><span class="lbl">'+lbl+'</span><span class="val">'+get(k)+'</span></div>').join('') + '</div>' +
+      '<div class="results-section"><h3>DAST-10 · Substance Use</h3>' +
+      '<div class="score-line">Your score: ' + dastTotal + ' / 10</div>' +
+      [['dast1','Non-medical drug use'],['dast2','More than one drug at a time'],['dast3','Able to stop when you want'],['dast4','Blackouts or flashbacks from drug use'],['dast5','Feeling bad or guilty about drug use'],['dast6','Family complaints about drug involvement'],['dast7','Neglecting family due to drug use'],['dast8','Illegal activities to obtain drugs'],['dast9','Withdrawal symptoms when stopping'],['dast10','Medical problems from drug use']].map(([k,lbl])=>'<div class="results-row"><span class="lbl">'+lbl+'</span><span class="val">'+get(k)+'</span></div>').join('') + '</div>' +
+      (fd.get('smokes')==='no' ?
+      '<div class="results-section"><h3>Fagerström · Nicotine</h3><div class="results-row"><span class="lbl">Cigarette smoker</span><span class="val">No</span></div><div class="results-row"><span class="lbl">Status</span><span class="val">' + get('nic_status') + '</span></div></div>' :
+      '<div class="results-section"><h3>Fagerström · Nicotine</h3>' +
+      '<div class="score-line">Your score: ' + fagTotal + ' / 10</div>' +
+      [['fag1','Time to first cigarette after waking'],['fag2','Difficulty not smoking in forbidden places'],['fag3','Most valued cigarette of the day'],['fag4','Number of cigarettes per day'],['fag5','More smoking in the first hours after waking'],['fag6','Smoking when ill and in bed']].map(([k,lbl])=>'<div class="results-row"><span class="lbl">'+lbl+'</span><span class="val">'+get(k)+'</span></div>').join('') +
+      '<div class="results-row"><span class="lbl">Nicotine product status</span><span class="val">' + get('nic_status') + '</span></div></div>') +
+      '<div class="results-section"><h3>PHQ-8 · Mood</h3>' +
+      '<div class="score-line">Your score: ' + phqTotal + ' / 24</div>' +
+      [['phq1','Little interest or pleasure in things'],['phq2','Feeling down, depressed, or hopeless'],['phq3','Trouble sleeping or sleeping too much'],['phq4','Feeling tired or low energy'],['phq5','Poor appetite or overeating'],['phq6','Feeling like a failure or letting others down'],['phq7','Trouble concentrating'],['phq8','Moving slowly or feeling restless']].map(([k,lbl])=>'<div class="results-row"><span class="lbl">'+lbl+'</span><span class="val">'+get(k)+'</span></div>').join('') + '</div>' +
+      '<div class="results-section"><h3>Safety</h3>' +
+      '<div class="results-row"><span class="lbl">Self-harm question</span><span class="val">' + get('phq_safety') + '</span></div>' +
+      (get('phq_safety_text') !== '—' ? '<div class="results-row"><span class="lbl">Detail</span><span class="val">'+get('phq_safety_text')+'</span></div>' : '') +
+      '</div>';
+  },()=>{
+    document.getElementById('msg-error').style.display='block';
+    btn.disabled=false; btn.textContent='Send to Mike';
+  });
+});
+</script>
+</body>
+</html>
