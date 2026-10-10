@@ -138,7 +138,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- PART 2 -->
     <div class="section">
       <div class="section-title">Part 2: Your Story</div>
-      <div class="section-sub">The real version.</div>
+      <div class="section-sub">In your own words, however it comes out.</div>
     </div>
 
     <div class="q-block">
@@ -170,7 +170,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
     <div class="q-block">
       <label class="q-label"><span class="q-num">7.</span> Walk me through what you eat on a typical day.</label>
-      <p class="q-sub">Not what you wish you ate. What you actually eat, breakfast through last snack.</p>
+      <p class="q-sub">Breakfast through your last snack of the night, on a regular day.</p>
       <textarea name="q7" rows="4"></textarea>
     </div>
     <div class="q-block">
@@ -210,7 +210,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="q-block">
       <label class="q-label"><span class="q-num">14.</span> Does your work feel meaningful to you?</label>
-      <p class="q-sub">Not the professional answer. The honest one.</p>
       <textarea name="q14" rows="3"></textarea>
     </div>
     <div class="q-block">
@@ -219,7 +218,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="q-block">
       <label class="q-label"><span class="q-num">16.</span> What are you most proud of right now, today?</label>
-      <p class="q-sub">Not historically. Right now.</p>
       <textarea name="q16" rows="3"></textarea>
     </div>
     <div class="q-block">
@@ -245,7 +243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="q-block">
       <label class="q-label"><span class="q-num">20.</span> What gives your days a sense of meaning right now?</label>
-      <p class="q-sub">Not the rehearsed answer. The actual specific things.</p>
+      <p class="q-sub">The specific things, big or small, that make a day feel good.</p>
       <textarea name="q20" rows="3"></textarea>
     </div>
 
@@ -257,7 +255,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
     <div class="q-block">
       <label class="q-label"><span class="q-num">21.</span> Have you ever been through something that required you to genuinely start over?</label>
-      <p class="q-sub">Not a reset. An actual rebuild. What did it cost? What did it prove?</p>
+      <p class="q-sub">What happened, and what did it show you about yourself?</p>
       <textarea name="q21" rows="4"></textarea>
     </div>
     <div class="q-block">
@@ -270,8 +268,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <textarea name="q23" rows="3"></textarea>
     </div>
     <div class="q-block">
-      <label class="q-label"><span class="q-num">24.</span> What do you want from me as a coach?</label>
-      <p class="q-sub">What kind of support actually helps you? What definitely does not?</p>
+      <label class="q-label"><span class="q-num">24.</span> What can I do as a coach to best support you?</label>
       <textarea name="q24" rows="3"></textarea>
     </div>
     <div class="q-block">
@@ -317,7 +314,7 @@ document.getElementById('psi-form').addEventListener('submit', function(e) {
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Sending...';
   const fd = new FormData(this);
-  const get = k => fd.get(k) || '(left blank)';
+  const get = k => fd.get(k) || '—';
 
   const lines = [
     '════════════════════════════════',
@@ -368,7 +365,7 @@ document.getElementById('psi-form').addEventListener('submit', function(e) {
     '21. Genuine start over experience:\n' + get('q21'),
     '22. What you feel in your body thinking about the change:\n' + get('q22'),
     '23. Foreseen obstacles:\n' + get('q23'),
-    '24. What they want from coaching:\n' + get('q24'),
+    '24. What can I do as a coach to best support you:\n' + get('q24'),
     '25. Anything else:\n' + get('q25'),
     '',
     '── COACHING AGREEMENT ──',
@@ -413,7 +410,7 @@ document.getElementById('psi-form').addEventListener('submit', function(e) {
       q(20,'What gives your days meaning') + '</div>' +
       '<div class="results-section"><h3>Readiness</h3>' +
       q(21,'A genuine start-over experience') + q(22,'When you think about making the change that you are hoping for, what do you feel in your body?') +
-      q(23,'What do you perceive as any foreseen obstacles?') + q(24,'What you want from coaching') +
+      q(23,'What do you perceive as any foreseen obstacles?') + q(24,'What can I do as a coach to best support you?') +
       q(25,'Anything else') + '</div>' +
       '<div class="results-section"><h3>Coaching Agreement</h3>' +
       '<div class="results-row"><span class="lbl">Agreement confirmed</span><span class="val">'+(get('agr_confirm')==='confirmed'?'✓ Yes':'Not confirmed')+'</span></div>' +
