@@ -117,7 +117,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="brand-name">PICKIN' UP THOSE PEACES</div>
     <div class="doc-title">Wellness Inventory</div>
     <hr class="brand-rule">
-    <div class="doc-sub">Complete before your discovery call &nbsp;·&nbsp; About ten minutes</div>
+    <div class="doc-sub">Complete before your discovery call &nbsp;·&nbsp; Just a couple of minutes of your time</div>
   </div>
 
   <!-- Form -->
@@ -286,7 +286,7 @@ document.getElementById('wi-form').addEventListener('submit', function(e) {
   btn.textContent = 'Sending...';
 
   const fd = new FormData(this);
-  const get = k => fd.get(k) || '(left blank)';
+  const get = k => fd.get(k) || '—';
 
   const lines = [
     '════════════════════════════════',
